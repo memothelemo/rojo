@@ -85,18 +85,18 @@ impl SourcemapCommand {
     }
 }
 
-fn filter_nothing(_instance: &InstanceWithMeta) -> bool {
+pub fn filter_nothing(_instance: &InstanceWithMeta) -> bool {
     true
 }
 
-fn filter_non_scripts(instance: &InstanceWithMeta) -> bool {
+pub fn filter_non_scripts(instance: &InstanceWithMeta) -> bool {
     match instance.class_name() {
         "Script" | "LocalScript" | "ModuleScript" => true,
         _ => false,
     }
 }
 
-fn recurse_create_node(
+pub fn recurse_create_node(
     tree: &RojoTree,
     referent: Ref,
     project_dir: &Path,

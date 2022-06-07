@@ -1,4 +1,6 @@
-## NOTE: This fork is powers tree generator tool. It will might be get dated after some months by.
+## NOTE: This fork powers tree generator tool. It will might be get dated after some months by.
+
+## About this fork: it publicly exposes all the APIs of Rojo
 
 <div align="center">
     <a href="https://rojo.space"><img src="assets/logo-512.png" alt="Rojo" height="217" /></a>
