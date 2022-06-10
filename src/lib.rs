@@ -3,9 +3,9 @@
 #![recursion_limit = "1024"]
 
 pub mod cli;
+mod project;
 
 #[cfg(test)]
-mod project;
 mod tree_view;
 
 pub mod auth_cookie;
