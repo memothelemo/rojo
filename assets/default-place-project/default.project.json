@@ -2,19 +2,16 @@
   "name": "{project_name}",
   "tree": {
     "$className": "DataModel",
-
     "ReplicatedStorage": {
       "Shared": {
         "$path": "src/shared"
       }
     },
-
     "ServerScriptService": {
       "Server": {
         "$path": "src/server"
       }
     },
-
     "StarterPlayer": {
       "StarterPlayerScripts": {
         "Client": {
@@ -22,7 +19,6 @@
         }
       }
     },
-
     "Workspace": {
       "$properties": {
         "FilteringEnabled": true
@@ -31,36 +27,121 @@
         "$className": "Part",
         "$properties": {
           "Anchored": true,
-          "Color": [
-            0.38823,
-            0.37254,
-            0.38823
-          ],
+          "Color": [0.356863, 0.356863, 0.356863],
           "Locked": true,
-          "Position": [
-            0,
-            -10,
-            0
-          ],
-          "Size": [
-            512,
-            20,
-            512
-          ]
+          "Position": [0, -8, 0],
+          "Size": [2048, 16, 2048],
+          "BottomSurface": "Smooth",
+          "TopSurface": "Smooth"
+        },
+        "Texture": {
+          "$className": "Texture",
+          "$properties": {
+            "Color3": [0, 0, 0],
+            "StudsPerTileU": 8,
+            "StudsPerTileV": 8,
+            "Texture": "rbxassetid://6372755229",
+            "Transparency": 0.8,
+            "ZIndex": 1,
+            "Face": "Top"
+          }
+        }
+      },
+      "SpawnLocation": {
+        "$className": "SpawnLocation",
+        "$properties": {
+          "Anchored": true,
+          "Color": [0.639216, 0.635294, 0.647059],
+          "Position": [0, 0.5, 0],
+          "Size": [12, 1, 12],
+          "Duration": 0,
+          "Neutral": true,
+          "TeamColor": { "BrickColor": 194 }
+        },
+        "Decal": {
+          "$className": "Decal",
+          "$properties": {
+            "Color3": [1, 1, 1],
+            "Texture": "rbxasset://textures/SpawnLocation.png",
+            "Face": "Top",
+            "ZIndex": 1
+          }
         }
       }
     },
     "Lighting": {
+      "$attributes": {
+        "UseCurrentLighting": false
+      },
       "$properties": {
-        "Ambient": [
-          0,
-          0,
-          0
-        ],
-        "Brightness": 2,
+        "Ambient": [0.27451, 0.27451, 0.27451],
+        "Brightness": 3,
+        "ClockTime": 14.5,
+        "ColorShift_Bottom": [0, 0, 0],
+        "ColorShift_Top": [0, 0, 0],
+        "EnvironmentDiffuseScale": 1,
+        "EnvironmentSpecularScale": 1,
+        "ExposureCompensation": 0,
         "GlobalShadows": true,
+        "OutdoorAmbient": [0.27451, 0.27451, 0.27451],
         "Outlines": false,
-        "Technology": "Voxel"
+        "ShadowSoftness": 0.2,
+        "Technology": "ShadowMap"
+      },
+      "Atmosphere": {
+        "$className": "Atmosphere",
+        "$properties": {
+          "Density": 0.3,
+          "Offset": 0.25,
+          "Color": [0.780392, 0.780392, 0.780392],
+          "Decay": [0.415686, 0.439216, 0.490196],
+          "Glare": 0,
+          "Haze": 0
+        }
+      },
+      "Sky": {
+        "$className": "Sky",
+        "$properties": {
+          "CelestialBodiesShown": true,
+          "MoonAngularSize": 11,
+          "MoonTextureId": "rbxassetid://6444320592",
+          "SkyboxBk": "rbxassetid://6444884337",
+          "SkyboxDn": "rbxassetid://6444884785",
+          "SkyboxFt": "rbxassetid://6444884337",
+          "SkyboxLf": "rbxassetid://6444884337",
+          "SkyboxRt": "rbxassetid://6444884337",
+          "SkyboxUp": "rbxassetid://6412503613",
+          "StarCount": 3000,
+          "SunAngularSize": 11,
+          "SunTextureId": "rbxassetid://6196665106"
+        }
+      },
+      "Bloom": {
+        "$className": "BloomEffect",
+        "$properties": {
+          "Enabled": true,
+          "Intensity": 1,
+          "Size": 24,
+          "Threshold": 2
+        }
+      },
+      "DepthOfField": {
+        "$className": "DepthOfFieldEffect",
+        "$properties": {
+          "Enabled": false,
+          "FarIntensity": 0.1,
+          "FocusDistance": 0.05,
+          "InFocusRadius": 30,
+          "NearIntensity": 0.75
+        }
+      },
+      "SunRays": {
+        "$className": "SunRaysEffect",
+        "$properties": {
+          "Enabled": true,
+          "Intensity": 0.01,
+          "Spread": 0.1
+        }
       }
     },
     "SoundService": {
