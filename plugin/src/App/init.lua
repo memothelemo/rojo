@@ -23,6 +23,7 @@ local PatchTree = require(Plugin.PatchTree)
 local preloadAssets = require(Plugin.preloadAssets)
 local soundPlayer = require(Plugin.soundPlayer)
 local ignorePlaceIds = require(Plugin.ignorePlaceIds)
+local timeUtil = require(Plugin.timeUtil)
 local Theme = require(script.Theme)
 
 local Page = require(script.Page)
@@ -118,6 +119,13 @@ function App:init()
 		end)
 	end)
 
+	self.disconnectUpdatesCheckChanged = Settings:onChanged("checkForUpdates", function()
+		self:checkForUpdates()
+	end)
+	self.disconnectPrereleasesCheckChanged = Settings:onChanged("checkForPrereleases", function()
+		self:checkForUpdates()
+	end)
+
 	self:setState({
 		appStatus = AppStatus.NotConnected,
 		guiEnabled = false,
@@ -131,32 +139,35 @@ function App:init()
 		toolbarIcon = Assets.Images.PluginButton,
 	})
 
-	if
-		RunService:IsEdit()
-		and self.serveSession == nil
-		and Settings:get("syncReminder")
-		and self:getLastSyncTimestamp()
-		and (self:isSyncLockAvailable())
-	then
-		self:addNotification("You've previously synced this place. Would you like to reconnect?", 300, {
-			Connect = {
-				text = "Connect",
-				style = "Solid",
-				layoutOrder = 1,
-				onClick = function(notification)
-					notification:dismiss()
-					self:startSession()
-				end,
-			},
-			Dismiss = {
-				text = "Dismiss",
-				style = "Bordered",
-				layoutOrder = 2,
-				onClick = function(notification)
-					notification:dismiss()
-				end,
-			},
-		})
+	if RunService:IsEdit() then
+		self:checkForUpdates()
+
+		if
+			Settings:get("syncReminder")
+			and self.serveSession == nil
+			and self:getLastSyncTimestamp()
+			and (self:isSyncLockAvailable())
+		then
+			self:addNotification("You've previously synced this place. Would you like to reconnect?", 300, {
+				Connect = {
+					text = "Connect",
+					style = "Solid",
+					layoutOrder = 1,
+					onClick = function(notification)
+						notification:dismiss()
+						self:startSession()
+					end,
+				},
+				Dismiss = {
+					text = "Dismiss",
+					style = "Bordered",
+					layoutOrder = 2,
+					onClick = function(notification)
+						notification:dismiss()
+					end,
+				},
+			})
+		end
 	end
 
 	if self:isAutoConnectPlaytestServerAvailable() then
@@ -179,6 +190,10 @@ end
 function App:willUnmount()
 	self.waypointConnection:Disconnect()
 	self.confirmationBindable:Destroy()
+
+	self.disconnectUpdatesCheckChanged()
+	self.disconnectPrereleasesCheckChanged()
+
 	self.autoConnectPlaytestServerListener()
 	self:clearRunningConnectionInfo()
 end
@@ -223,6 +238,40 @@ function App:closeNotification(id: number)
 	self:setState({
 		notifications = notifications,
 	})
+end
+
+function App:checkForUpdates()
+	if not Settings:get("checkForUpdates") then
+		return
+	end
+
+	local isLocalInstall = string.find(debug.traceback(), "\n[^\n]-user_.-$") ~= nil
+	local latestCompatibleVersion = Version.retrieveLatestCompatible({
+		version = Config.version,
+		includePrereleases = isLocalInstall and Settings:get("checkForPrereleases"),
+	})
+	if not latestCompatibleVersion then
+		return
+	end
+
+	self:addNotification(
+		string.format(
+			"A newer compatible version of Rojo, %s, was published %s! Go to the Rojo releases page to learn more.",
+			Version.display(latestCompatibleVersion.version),
+			timeUtil.elapsedToText(DateTime.now().UnixTimestamp - latestCompatibleVersion.publishedUnixTimestamp)
+		),
+		500,
+		{
+			Dismiss = {
+				text = "Dismiss",
+				style = "Bordered",
+				layoutOrder = 2,
+				onClick = function(notification)
+					notification:dismiss()
+				end,
+			},
+		}
+	)
 end
 
 function App:getPriorEndpoint()
@@ -425,11 +474,6 @@ function App:startSession()
 
 	local host, port = self:getHostAndPort()
 
-	local sessionOptions = {
-		openScriptsExternally = Settings:get("openScriptsExternally"),
-		twoWaySync = Settings:get("twoWaySync"),
-	}
-
 	local baseUrl = if string.find(host, "^https?://")
 		then string.format("%s:%s", host, port)
 		else string.format("http://%s:%s", host, port)
@@ -437,8 +481,7 @@ function App:startSession()
 
 	local serveSession = ServeSession.new({
 		apiContext = apiContext,
-		openScriptsExternally = sessionOptions.openScriptsExternally,
-		twoWaySync = sessionOptions.twoWaySync,
+		twoWaySync = Settings:get("twoWaySync"),
 	})
 
 	self.cleanupPrecommit = serveSession.__reconciler:hookPrecommit(function(patch, instanceMap)
@@ -457,7 +500,7 @@ function App:startSession()
 	end)
 
 	serveSession:hookPostcommit(function(patch, _instanceMap, unapplied)
-		local now = os.time()
+		local now = DateTime.now().UnixTimestamp
 		local old = self.state.patchData
 
 		if PatchSet.isEmpty(patch) then
@@ -582,6 +625,9 @@ function App:startSession()
 					return "Accept"
 				end
 			end
+		elseif confirmationBehavior == "Never" then
+			Log.trace("Accepting patch without confirmation because behavior is set to Never")
+			return "Accept"
 		end
 
 		-- The datamodel name gets overwritten by Studio, making confirmation of it intrusive
