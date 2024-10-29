@@ -1,3 +1,5 @@
+#![cfg(feature = "full")]
+
 use std::collections::HashMap;
 
 use rbx_dom_weak::types::Ref;

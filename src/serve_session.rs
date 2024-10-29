@@ -22,6 +22,7 @@ use crate::{
         PatchSet, RojoTree,
     },
     snapshot_middleware::snapshot_from_vfs,
+    sourcemap::SourcemapNode,
 };
 
 /// Contains all of the state for a Rojo serve session. A serve session is used
@@ -221,6 +222,12 @@ impl ServeSession {
 
     pub fn root_dir(&self) -> &Path {
         self.root_project.folder_location()
+    }
+
+    #[must_use]
+    pub fn sourcemap(&self) -> Option<SourcemapNode> {
+        let tree = self.tree();
+        crate::sourcemap::recurse_create_node(&tree, tree.get_root_id(), self.root_dir())
     }
 }
 

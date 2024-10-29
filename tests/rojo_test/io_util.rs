@@ -1,3 +1,4 @@
+#![allow(unused)]
 use std::{
     fs,
     io::{self, Read},

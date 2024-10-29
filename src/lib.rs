@@ -7,6 +7,7 @@ pub mod cli;
 #[cfg(test)]
 mod tree_view;
 
+#[cfg(feature = "full")]
 mod auth_cookie;
 mod change_processor;
 mod glob;
@@ -20,8 +21,13 @@ mod serve_session;
 mod session_id;
 mod snapshot;
 mod snapshot_middleware;
+#[cfg(feature = "full")]
 mod web;
 
 pub use project::*;
+pub use serve_session::*;
 pub use session_id::SessionId;
+pub mod sourcemap;
+
+#[cfg(feature = "full")]
 pub use web::interface as web_api;

@@ -1,3 +1,4 @@
+#![cfg(feature = "full")]
 use std::{
     fs,
     path::{Path, PathBuf},

@@ -26,6 +26,7 @@ default = []
 # Enable this feature to live-reload assets from the web UI.
 dev_live_assets = []
 
+full = ["hyper", "reqwest"]
 profile-with-tracy = ["profiling/profile-with-tracy", "tracy-client"]
 
 [workspace]
@@ -44,7 +45,7 @@ memofs = { version = "0.3.0", path = "crates/memofs" }
 
 # These dependencies can be uncommented when working on rbx-dom simultaneously
 # rbx_binary = { path = "../rbx-dom/rbx_binary" }
-# rbx_dom_weak = { path = "../rbx-dom/rbx_dom_weak" }
+# rbx_dom_weak =     { path = "../rbx-dom/rbx_dom_weak" }
 # rbx_reflection = { path = "../rbx-dom/rbx_reflection" }
 # rbx_reflection_database = { path = "../rbx-dom/rbx_reflection_database" }
 # rbx_xml = { path = "../rbx-dom/rbx_xml" }
@@ -65,7 +66,7 @@ fs-err = "2.6.0"
 futures = "0.3.17"
 globset = "0.4.8"
 humantime = "2.1.0"
-hyper = { version = "0.14.13", features = ["server", "tcp", "http1"] }
+hyper = { version = "0.14.13", features = ["server", "tcp", "http1"], optional = true }
 jod-thread = "0.1.2"
 log = "0.4.14"
 maplit = "1.0.2"
@@ -76,7 +77,7 @@ reqwest = { version = "0.11.10", features = [
     "blocking",
     "json",
     "native-tls-vendored",
-] }
+], optional = true }
 ritz = "0.1.0"
 roblox_install = "1.0.0"
 serde = { version = "1.0.130", features = ["derive", "rc"] }

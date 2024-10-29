@@ -5,8 +5,10 @@ mod doc;
 mod fmt_project;
 mod init;
 mod plugin;
+#[cfg(feature = "full")]
 mod serve;
 mod sourcemap;
+#[cfg(feature = "full")]
 mod upload;
 
 use std::{borrow::Cow, env, path::Path, str::FromStr};
@@ -19,8 +21,10 @@ pub use self::doc::DocCommand;
 pub use self::fmt_project::FmtProjectCommand;
 pub use self::init::{InitCommand, InitKind};
 pub use self::plugin::{PluginCommand, PluginSubcommand};
+#[cfg(feature = "full")]
 pub use self::serve::ServeCommand;
 pub use self::sourcemap::SourcemapCommand;
+#[cfg(feature = "full")]
 pub use self::upload::UploadCommand;
 
 /// Command line options that Rojo accepts, defined using the clap crate.
@@ -39,8 +43,10 @@ impl Options {
     pub fn run(self) -> anyhow::Result<()> {
         match self.subcommand {
             Subcommand::Init(subcommand) => subcommand.run(),
+            #[cfg(feature = "full")]
             Subcommand::Serve(subcommand) => subcommand.run(self.global),
             Subcommand::Build(subcommand) => subcommand.run(),
+            #[cfg(feature = "full")]
             Subcommand::Upload(subcommand) => subcommand.run(),
             Subcommand::Sourcemap(subcommand) => subcommand.run(),
             Subcommand::FmtProject(subcommand) => subcommand.run(),
@@ -112,8 +118,10 @@ pub struct ColorChoiceParseError {
 #[derive(Debug, Parser)]
 pub enum Subcommand {
     Init(InitCommand),
+    #[cfg(feature = "full")]
     Serve(ServeCommand),
     Build(BuildCommand),
+    #[cfg(feature = "full")]
     Upload(UploadCommand),
     Sourcemap(SourcemapCommand),
     FmtProject(FmtProjectCommand),
