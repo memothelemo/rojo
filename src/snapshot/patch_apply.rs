@@ -155,6 +155,7 @@ fn apply_update_child(context: &mut PatchApplyContext, tree: &mut RojoTree, patc
     let mut instance = match tree.get_instance_mut(patch.id) {
         Some(instance) => instance,
         None => {
+            #[cfg(feature = "binary")]
             log::warn!(
                 "Patch misapplication: Instance {:?}, referred to by update patch, did not exist.",
                 patch.id
@@ -211,6 +212,7 @@ fn apply_update_child(context: &mut PatchApplyContext, tree: &mut RojoTree, patc
     context.applied_patch_set.updated.push(applied_patch)
 }
 
+#[cfg(feature = "binary")]
 #[cfg(test)]
 mod test {
     use super::*;

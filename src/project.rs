@@ -188,6 +188,7 @@ impl Project {
             path: project_file_location.clone(),
         })?;
         project.file_location = project_file_location;
+        #[cfg(feature = "binary")]
         project.check_compatibility();
         if project.name.is_none() {
             project.set_file_name(fallback_name)?;
@@ -228,6 +229,7 @@ impl Project {
 
     /// Checks if there are any compatibility issues with this project file and
     /// warns the user if there are any.
+    #[cfg(feature = "binary")]
     fn check_compatibility(&self) {
         self.tree.validate_reserved_names();
     }
@@ -328,6 +330,7 @@ pub struct ProjectNode {
 }
 
 impl ProjectNode {
+    #[cfg(feature = "binary")]
     fn validate_reserved_names(&self) {
         for (name, child) in &self.children {
             if name.starts_with('$') {

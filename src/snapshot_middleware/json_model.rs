@@ -32,6 +32,7 @@ pub fn snapshot_json_model(
     let mut instance: JsonModel = serde_json::from_str(contents_str)
         .with_context(|| format!("File is not a valid JSON model: {}", path.display()))?;
 
+    #[cfg(feature = "binary")]
     if let Some(top_level_name) = &instance.name {
         let new_name = format!("{}.model.json", top_level_name);
 

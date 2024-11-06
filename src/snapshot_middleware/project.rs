@@ -352,6 +352,7 @@ fn infer_class_name(name: &str, parent_class: Option<&str>) -> Option<Cow<'stati
 }
 
 // #[cfg(feature = "broken-tests")]
+#[cfg(feature = "binary")]
 #[cfg(test)]
 mod test {
     use super::*;
@@ -423,7 +424,6 @@ mod test {
         insta::assert_yaml_snapshot!(instance_snapshot);
     }
 
-    #[cfg(feature = "binary")]
     #[test]
     fn project_with_resolved_properties() {
         let _ = env_logger::try_init();
@@ -462,7 +462,6 @@ mod test {
         insta::assert_yaml_snapshot!(instance_snapshot);
     }
 
-    #[cfg(feature = "binary")]
     #[test]
     fn project_with_unresolved_properties() {
         let _ = env_logger::try_init();
@@ -536,7 +535,6 @@ mod test {
         insta::assert_yaml_snapshot!(instance_snapshot);
     }
 
-    #[cfg(feature = "binary")]
     #[test]
     fn project_with_path_to_txt() {
         let _ = env_logger::try_init();
@@ -660,7 +658,6 @@ mod test {
     /// Ensures that if a property is defined both in the resulting instance
     /// from $path and also in $properties, that the $properties value takes
     /// precedence.
-    #[cfg(feature = "binary")]
     #[test]
     fn project_path_property_overrides() {
         let _ = env_logger::try_init();
