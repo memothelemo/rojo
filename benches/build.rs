@@ -1,8 +1,10 @@
+#![cfg_attr(not(feature = "binary"), allow(unused))]
 use std::path::Path;
 
 use criterion::{criterion_group, criterion_main, BatchSize, Criterion};
 use tempfile::{tempdir, TempDir};
 
+#[cfg(feature = "binary")]
 use librojo::cli::BuildCommand;
 
 pub fn benchmark_small_place(c: &mut Criterion) {
@@ -17,6 +19,8 @@ fn bench_build_place(c: &mut Criterion, name: &str, path: &str) {
 
     // 'rojo build' generally takes a fair bit of time to execute.
     group.sample_size(10);
+
+    #[cfg(feature = "binary")]
     group.bench_function("build", |b| {
         b.iter_batched(
             || place_setup(path),
@@ -28,6 +32,7 @@ fn bench_build_place(c: &mut Criterion, name: &str, path: &str) {
     group.finish();
 }
 
+#[cfg(feature = "binary")]
 fn place_setup<P: AsRef<Path>>(input_path: P) -> (TempDir, BuildCommand) {
     let dir = tempdir().unwrap();
     let input = input_path.as_ref().to_path_buf();

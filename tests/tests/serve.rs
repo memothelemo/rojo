@@ -1,3 +1,4 @@
+#![cfg(feature = "binary")]
 use std::fs;
 
 use insta::{assert_yaml_snapshot, with_settings};

@@ -1,3 +1,4 @@
+#![cfg(feature = "binary")]
 use std::{fs, path::Path, process::Command};
 
 use insta::assert_snapshot;

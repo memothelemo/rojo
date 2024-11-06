@@ -1,10 +1,18 @@
+#[cfg(not(feature = "binary"))]
+fn main() {
+    panic!("Please compile Rojo with `--features binary` if you want to use Rojo with memothelemo's patch");
+}
+
+#[cfg(feature = "binary")]
+use backtrace::Backtrace;
+#[cfg(feature = "binary")]
+use clap::Parser;
+#[cfg(feature = "binary")]
+use librojo::cli::Options;
+#[cfg(feature = "binary")]
 use std::{env, panic, process};
 
-use backtrace::Backtrace;
-use clap::Parser;
-
-use librojo::cli::Options;
-
+#[cfg(feature = "binary")]
 fn main() {
     #[cfg(feature = "profile-with-tracy")]
     tracy_client::Client::start();

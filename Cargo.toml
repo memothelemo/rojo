@@ -26,6 +26,10 @@ default = []
 # Enable this feature to live-reload assets from the web UI.
 dev_live_assets = []
 
+# Enable this feature to compile Rojo as binary, by default it is disabled
+# to compile Rojo as a library
+binary = []
+
 profile-with-tracy = ["profiling/profile-with-tracy", "tracy-client"]
 
 [workspace]

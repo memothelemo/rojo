@@ -1,14 +1,21 @@
+#[cfg(feature = "binary")]
 use std::{
     env, io,
     path::{Path, PathBuf},
 };
 
+#[cfg(feature = "binary")]
 use fs_err as fs;
+#[cfg(feature = "binary")]
 use fs_err::File;
+#[cfg(feature = "binary")]
 use maplit::hashmap;
+#[cfg(feature = "binary")]
 use memofs::VfsSnapshot;
+#[cfg(feature = "binary")]
 use semver::Version;
 
+#[cfg(feature = "binary")]
 fn snapshot_from_fs_path(path: &Path) -> io::Result<VfsSnapshot> {
     println!("cargo:rerun-if-changed={}", path.display());
 
@@ -38,6 +45,14 @@ fn snapshot_from_fs_path(path: &Path) -> io::Result<VfsSnapshot> {
     }
 }
 
+#[cfg(not(feature = "binary"))]
+fn main() {
+    println!("cargo:rerun-if-changed=build/windows/rojo-manifest.rc");
+    println!("cargo:rerun-if-changed=build/windows/rojo.manifest");
+    embed_resource::compile("build/windows/rojo-manifest.rc");
+}
+
+#[cfg(feature = "binary")]
 fn main() -> Result<(), anyhow::Error> {
     let out_dir = env::var_os("OUT_DIR").unwrap();
 
