@@ -13,12 +13,19 @@ pub fn snapshot_txt(
     path: &Path,
 ) -> anyhow::Result<Option<InstanceSnapshot>> {
     let name = path.file_name_trim_end(".txt")?;
-    let contents = vfs.read_to_string(path)?;
-    let contents_str = contents.as_str();
 
-    let properties = hashmap! {
-        "Value".to_owned() => contents_str.into(),
-    };
+    #[allow(unused_mut)]
+    let mut properties = hashmap! {};
+
+    #[cfg(feature = "binary")]
+    {
+        let contents = vfs.read_to_string(path)?;
+        let contents_str = contents.as_str();
+
+        properties = hashmap! {
+            "Value".to_owned() => contents_str.into(),
+        };
+    }
 
     let meta_path = path.with_file_name(format!("{}.meta.json", name));
 
@@ -41,7 +48,7 @@ pub fn snapshot_txt(
     Ok(Some(snapshot))
 }
 
-#[cfg(test)]
+#[cfg(all(feature = "binary", test))]
 mod test {
     use super::*;
 

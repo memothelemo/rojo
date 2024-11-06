@@ -2,7 +2,9 @@ use std::{borrow::Cow, collections::HashMap, path::Path, str};
 
 use anyhow::Context;
 use memofs::Vfs;
-use rbx_dom_weak::types::{Attributes, Ref};
+#[cfg(feature = "binary")]
+use rbx_dom_weak::types::Attributes;
+use rbx_dom_weak::types::Ref;
 use serde::Deserialize;
 
 use crate::{
@@ -94,12 +96,19 @@ impl JsonModel {
             children.push(child.into_snapshot()?);
         }
 
+        #[cfg(not(feature = "binary"))]
+        let properties = HashMap::new();
+
+        #[cfg(feature = "binary")]
         let mut properties = HashMap::with_capacity(self.properties.len());
+
+        #[cfg(feature = "binary")]
         for (key, unresolved) in self.properties {
             let value = unresolved.resolve(&class_name, &key)?;
             properties.insert(key, value);
         }
 
+        #[cfg(feature = "binary")]
         if !self.attributes.is_empty() {
             let mut attributes = Attributes::new();
 
@@ -122,6 +131,7 @@ impl JsonModel {
     }
 }
 
+#[cfg(feature = "binary")]
 #[cfg(test)]
 mod test {
     use super::*;

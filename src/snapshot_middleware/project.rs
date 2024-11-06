@@ -2,7 +2,9 @@ use std::{borrow::Cow, collections::HashMap, ffi::OsStr, path::Path};
 
 use anyhow::{bail, Context};
 use memofs::Vfs;
-use rbx_dom_weak::types::{Attributes, Ref};
+#[cfg(feature = "binary")]
+use rbx_dom_weak::types::Attributes;
+use rbx_dom_weak::types::Ref;
 use rbx_reflection::ClassTag;
 
 use crate::{
@@ -240,6 +242,7 @@ pub fn snapshot_project_node(
         }
     }
 
+    #[cfg(feature = "binary")]
     for (key, unresolved) in &node.properties {
         let value = unresolved
             .clone()
@@ -268,6 +271,7 @@ pub fn snapshot_project_node(
         properties.insert(key.clone(), value);
     }
 
+    #[cfg(feature = "binary")]
     if !node.attributes.is_empty() {
         let mut attributes = Attributes::new();
 
@@ -419,6 +423,7 @@ mod test {
         insta::assert_yaml_snapshot!(instance_snapshot);
     }
 
+    #[cfg(feature = "binary")]
     #[test]
     fn project_with_resolved_properties() {
         let _ = env_logger::try_init();
@@ -457,6 +462,7 @@ mod test {
         insta::assert_yaml_snapshot!(instance_snapshot);
     }
 
+    #[cfg(feature = "binary")]
     #[test]
     fn project_with_unresolved_properties() {
         let _ = env_logger::try_init();
@@ -530,6 +536,7 @@ mod test {
         insta::assert_yaml_snapshot!(instance_snapshot);
     }
 
+    #[cfg(feature = "binary")]
     #[test]
     fn project_with_path_to_txt() {
         let _ = env_logger::try_init();
@@ -653,6 +660,7 @@ mod test {
     /// Ensures that if a property is defined both in the resulting instance
     /// from $path and also in $properties, that the $properties value takes
     /// precedence.
+    #[cfg(feature = "binary")]
     #[test]
     fn project_path_property_overrides() {
         let _ = env_logger::try_init();

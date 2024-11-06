@@ -1,13 +1,13 @@
 use std::path::Path;
 
+#[cfg(feature = "binary")]
 use anyhow::Context;
 use maplit::hashmap;
 use memofs::{IoResultExt, Vfs};
 
-use crate::{
-    lua_ast::{Expression, Statement},
-    snapshot::{InstanceContext, InstanceMetadata, InstanceSnapshot},
-};
+#[cfg(feature = "binary")]
+use crate::lua_ast::{Expression, Statement};
+use crate::snapshot::{InstanceContext, InstanceMetadata, InstanceSnapshot};
 
 use super::{meta_file::AdjacentMetadata, util::PathExt};
 
@@ -17,16 +17,23 @@ pub fn snapshot_json(
     path: &Path,
 ) -> anyhow::Result<Option<InstanceSnapshot>> {
     let name = path.file_name_trim_end(".json")?;
-    let contents = vfs.read(path)?;
 
-    let value: serde_json::Value = serde_json::from_slice(&contents)
-        .with_context(|| format!("File contains malformed JSON: {}", path.display()))?;
+    #[allow(unused_mut)]
+    let mut properties = hashmap! {};
 
-    let as_lua = json_to_lua(value).to_string();
+    #[cfg(feature = "binary")]
+    {
+        let contents = vfs.read(path)?;
 
-    let properties = hashmap! {
-        "Source".to_owned() => as_lua.into(),
-    };
+        let value: serde_json::Value = serde_json::from_slice(&contents)
+            .with_context(|| format!("File contains malformed JSON: {}", path.display()))?;
+
+        let as_lua = json_to_lua(value).to_string();
+
+        properties = hashmap! {
+            "Source".to_owned() => as_lua.into(),
+        };
+    }
 
     let meta_path = path.with_file_name(format!("{}.meta.json", name));
 
@@ -49,10 +56,12 @@ pub fn snapshot_json(
     Ok(Some(snapshot))
 }
 
+#[cfg(feature = "binary")]
 fn json_to_lua(value: serde_json::Value) -> Statement {
     Statement::Return(json_to_lua_value(value))
 }
 
+#[cfg(feature = "binary")]
 fn json_to_lua_value(value: serde_json::Value) -> Expression {
     use serde_json::Value;
 
@@ -73,7 +82,7 @@ fn json_to_lua_value(value: serde_json::Value) -> Expression {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(feature = "binary", test))]
 mod test {
     use super::*;
 

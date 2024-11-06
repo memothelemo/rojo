@@ -1,6 +1,6 @@
 // Recursion limit bump is to support Ritz, a JSX-like proc macro used for
 // Rojo's web UI currently.
-#![recursion_limit = "1024"]
+#![cfg_attr(feature = "binary", recursion_limit = "1024")]
 
 #[cfg(feature = "binary")]
 pub mod cli;
@@ -14,6 +14,7 @@ mod auth_cookie;
 mod change_processor;
 #[cfg(feature = "binary")]
 mod glob;
+#[cfg(feature = "binary")]
 mod lua_ast;
 #[cfg(feature = "binary")]
 mod message_queue;

@@ -1,6 +1,7 @@
 use std::{borrow::Cow, collections::HashMap, path::PathBuf};
 
 use anyhow::{format_err, Context};
+#[cfg(feature = "binary")]
 use rbx_dom_weak::types::Attributes;
 use serde::{Deserialize, Serialize};
 
@@ -45,6 +46,12 @@ impl AdjacentMetadata {
         }
     }
 
+    #[cfg(not(feature = "binary"))]
+    pub fn apply_properties(&mut self, _snapshot: &mut InstanceSnapshot) -> anyhow::Result<()> {
+        Ok(())
+    }
+
+    #[cfg(feature = "binary")]
     pub fn apply_properties(&mut self, snapshot: &mut InstanceSnapshot) -> anyhow::Result<()> {
         let path = &self.path;
 
@@ -148,6 +155,12 @@ impl DirectoryMetadata {
         }
     }
 
+    #[cfg(not(feature = "binary"))]
+    fn apply_properties(&mut self, _snapshot: &mut InstanceSnapshot) -> anyhow::Result<()> {
+        Ok(())
+    }
+
+    #[cfg(feature = "binary")]
     fn apply_properties(&mut self, snapshot: &mut InstanceSnapshot) -> anyhow::Result<()> {
         let path = &self.path;
 

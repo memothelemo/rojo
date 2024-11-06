@@ -1,6 +1,8 @@
 use std::{collections::BTreeMap, path::Path};
 
+#[cfg(feature = "binary")]
 use anyhow::Context;
+#[cfg(feature = "binary")]
 use maplit::hashmap;
 use memofs::{IoResultExt, Vfs};
 use serde::Serialize;
@@ -21,26 +23,32 @@ pub fn snapshot_csv(
     let name = path.file_name_trim_end(".csv")?;
 
     let meta_path = path.with_file_name(format!("{}.meta.json", name));
-    let contents = vfs.read(path)?;
-
-    let table_contents = convert_localization_csv(&contents).with_context(|| {
-        format!(
-            "File was not a valid LocalizationTable CSV file: {}",
-            path.display()
-        )
-    })?;
 
     let mut snapshot = InstanceSnapshot::new()
         .name(name)
         .class_name("LocalizationTable")
-        .properties(hashmap! {
-            "Contents".to_owned() => table_contents.into(),
-        })
         .metadata(
             InstanceMetadata::new()
                 .instigating_source(path)
                 .relevant_paths(vec![path.to_path_buf(), meta_path.clone()]),
         );
+
+    #[cfg(feature = "binary")]
+    {
+        let contents = vfs.read(path)?;
+
+        #[cfg(feature = "binary")]
+        let table_contents = convert_localization_csv(&contents).with_context(|| {
+            format!(
+                "File was not a valid LocalizationTable CSV file: {}",
+                path.display()
+            )
+        })?;
+
+        snapshot = snapshot.properties(hashmap! {
+            "Contents".to_owned() => table_contents.into(),
+        });
+    }
 
     if let Some(meta_contents) = vfs.read(&meta_path).with_not_found()? {
         let mut metadata = AdjacentMetadata::from_slice(&meta_contents, meta_path)?;
@@ -119,6 +127,7 @@ struct LocalizationEntry<'a> {
 /// https://github.com/BurntSushi/rust-csv/issues/151
 ///
 /// This function operates in one step in order to minimize data-copying.
+#[cfg(feature = "binary")]
 fn convert_localization_csv(contents: &[u8]) -> Result<String, csv::Error> {
     let mut reader = csv::Reader::from_reader(contents);
 
@@ -164,7 +173,7 @@ fn convert_localization_csv(contents: &[u8]) -> Result<String, csv::Error> {
     Ok(encoded)
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "binary"))]
 mod test {
     use super::*;
 
